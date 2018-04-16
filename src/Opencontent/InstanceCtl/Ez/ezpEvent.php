@@ -1,4 +1,7 @@
 <?php
+
+namespace Opencontent\InstanceCtl\Ez;
+
 /**
  * File containing the ezpEvent class.
  *

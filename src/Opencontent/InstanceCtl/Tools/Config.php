@@ -19,17 +19,13 @@ class Config
 
     public $instances_filename = 'instances.yml';
 
-    public $cache_filename = 'instancectl.cache';
+    public $cache_filename = '.instancectl.cache';
 
-    public $instancectl_gateway;
+    public $instancectl_server_uri = 'null';
 
-    public $instancectl_server_type = 'ez';
+    public $instancectl_server_username = 'null';
 
-    public $instancectl_server_uri;
-
-    public $instancectl_server_username;
-
-    public $instancectl_server_password;
+    public $instancectl_server_password = 'null';
 
     public function __construct(array $input = null)
     {

@@ -178,10 +178,10 @@ class Instance
 
     public function addTags(array $tags)
     {
-        $this->tags = array_merge(
+        $this->tags = array_unique(array_merge(
             $this->tags,
             $tags
-        );
+        ));
 
         return $this;
     }

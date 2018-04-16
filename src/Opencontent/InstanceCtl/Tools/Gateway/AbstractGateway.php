@@ -3,6 +3,7 @@
 namespace Opencontent\InstanceCtl\Tools\Gateway;
 
 use Opencontent\InstanceCtl\Tools\InstanceExporter;
+use Opencontent\InstanceCtl\Tools\InstancesHandler;
 use Symfony\Component\Console\Output\OutputInterface;
 use Opencontent\InstanceCtl\Tools\Instance;
 
@@ -76,5 +77,7 @@ abstract class AbstractGateway
      * @throws \Exception
      */
     abstract public function store(array $instances);
+
+    abstract public function read();
 
 }

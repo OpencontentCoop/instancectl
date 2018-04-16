@@ -21,14 +21,24 @@ class Filesystem extends AbstractGateway
             'server' => ConfigHandler::current()->server_name,
             'document_root' => ConfigHandler::current()->document_root,
             'generator' => 'instancectl generate',
-            'instances' => array()
+            'instances' => array(),
+            'timestamp' => time()
         );
         ksort($instances);
         foreach($instances as $instance){
             $data['instances'][$instance->getIdentifier()] = $this->getExporter()->toYamlArray($instance);
         }
         $yaml = Yaml::dump($data, 10);
-        $this->getOutput()->writeln("Store in $filepath");
+        $this->getOutput()->writeln("Store data in $filepath");
         file_put_contents($filepath, $yaml);
+    }
+
+    public function read()
+    {
+        $filename = $this->getFilename() ? $this->getFilename() : ConfigHandler::current()->instances_filename;
+        $data = file_get_contents($filename);
+        $yaml = Yaml::parse($data);
+
+        return $yaml;
     }
 }

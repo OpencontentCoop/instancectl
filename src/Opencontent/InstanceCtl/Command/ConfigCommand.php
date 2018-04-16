@@ -52,15 +52,10 @@ class ConfigCommand extends Command
 
         $config = ConfigHandler::current();
         foreach ($config->toArray() as $key => $value) {
-            if ($key == 'instancectl_gateway') {
-                $newValue = $this->io->choice(
-                    $key,
-                    array(ConfigHandler::GATEWAY_FILESYSTEM, ConfigHandler::GATEWAY_REMOTE),
-                    ConfigHandler::GATEWAY_FILESYSTEM
-                );
-            } else {
-                $newValue = $this->io->ask($key, $value);
+            if ($key == 'document_root'){
+                $value = getcwd();
             }
+            $newValue = $this->io->ask($key, $value);
 
             $config->{$key} = $newValue;
         }

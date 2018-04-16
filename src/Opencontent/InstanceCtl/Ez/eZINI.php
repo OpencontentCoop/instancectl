@@ -1,4 +1,7 @@
 <?php
+
+namespace Opencontent\InstanceCtl\Ez;
+
 /**
  * File containing the eZINI class.
  *
@@ -138,6 +141,8 @@ class eZINI
      */
     static protected $injectedMergeSettings = array();
 
+    static private $baseRoot;
+
     /**
      * Initialization of eZINI object
      *
@@ -152,7 +157,7 @@ class eZINI
      * @param bool $load @since 4.5 Lets you disable automatic loading of ini values in
      *                   cases where changes on instance will be done first.
      */
-    function eZINI( $fileName = 'site.ini', $rootDir = '', $useTextCodec = null, $useCache = null, $useLocalOverrides = null, $directAccess = false, $addArrayDefinition = false, $load = true )
+    function __construct( $fileName = 'site.ini', $rootDir = '', $useTextCodec = null, $useCache = null, $useLocalOverrides = null, $directAccess = false, $addArrayDefinition = false, $load = true )
     {
         $this->Charset = 'utf8';
         if ( $fileName == '' )
@@ -205,6 +210,22 @@ class eZINI
 
         if ( $load )
             $this->load();
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getBaseRoot()
+    {
+        return self::$baseRoot;
+    }
+
+    /**
+     * @param mixed $baseRoot
+     */
+    public static function setBaseRoot($baseRoot)
+    {
+        self::$baseRoot = rtrim($baseRoot, '/') . '/';
     }
 
     /*!
@@ -337,7 +358,7 @@ class eZINI
         if ( $rootDir == "" )
             $rootDir = "settings";
         if ( $rootDir[0] !== "/" )
-            $rootDir = __DIR__ . "/../../../" . $rootDir;
+            $rootDir = self::getBaseRoot() . "" . $rootDir;
         if ( file_exists( $rootDir . '/' . $fileName ) )
             return true;
         else if ( file_exists( $rootDir . '/' . $fileName . '.append.php' ) )
@@ -434,17 +455,16 @@ class eZINI
     */
     function findInputFiles( &$inputFiles, &$iniFile )
     {
-        $iniFile = __DIR__ . "/../../../";
+        $iniFile = self::getBaseRoot() . "";
         if ( $this->RootDir !== false )
             $iniFile .= eZDir::path( array( $this->RootDir, $this->FileName ) );
         else
             $iniFile .= eZDir::path( array( $this->FileName ) );
-
         $inputFiles = array();
 
         if ( $this->FileName === 'override.ini' )
         {
-            eZExtension::prependExtensionSiteAccesses( false, $this, true, false, false );
+            //eZExtension::prependExtensionSiteAccesses( false, $this, true, false, false );
         }
 
         if ( file_exists( $iniFile ) )
@@ -545,7 +565,7 @@ class eZINI
         eZDebug::accumulatorStart( 'ini', 'Ini load', 'Load cache' );
         if ( $reset )
             $this->reset();
-        $cachedDir = __DIR__ . "/../../../" . self::CONFIG_CACHE_DIR;
+        $cachedDir = self::getBaseRoot() . "" . self::CONFIG_CACHE_DIR;
 
         $fileName = $this->cacheFileName( $placement );
         $cachedFile = $cachedDir . $fileName;
@@ -964,7 +984,7 @@ class eZINI
         $fp = @fopen( $filePath, "w+");
         if ( !$fp )
         {
-            eZDebug::writeError( "Failed opening file '$filePath' for writing", __METHOD__ );
+            trigger_error( "Failed opening file '$filePath' for writing", E_USER_ERROR );
             return false;
         }
         $writeOK = true;
@@ -1747,7 +1767,7 @@ class eZINI
             $path = $path[0];
 
         // changing $path so that it's relative the root eZ Publish (legacy)
-        $path = str_replace( __DIR__ . "/../../../", "", $path );
+        $path = str_replace( self::getBaseRoot() . "", "", $path );
         $exploded = explode( '/', $path );
         $directoryCount = count( $exploded );
         switch ( $directoryCount )
@@ -1944,8 +1964,7 @@ class eZINI
      */
     static function getSiteAccessIni( $siteAccess, $iniFile )
     {
-        $saPath = eZSiteAccess::findPathToSiteAccess( $siteAccess );
-        return self::fetchFromFile( "$saPath/$iniFile" );
+        die('non va');
     }
 
     /*!

@@ -39,6 +39,9 @@ class InstancesHandler
         return file_exists($cacheFilepath);
     }
 
+    /**
+     * @return Instance[]
+     */
     public static function getCache()
     {
         $cacheFilepath = getcwd() . '/' . ConfigHandler::current()->cache_filename;
@@ -54,22 +57,11 @@ class InstancesHandler
      * @return Gateway\AbstractGateway
      * @throws \Exception
      */
-    public static function getGateway(array $instances)
+    public static function getGateway()
     {
-        $gateway = ConfigHandler::current()->instancectl_gateway;
-
-        if ($gateway == ConfigHandler::GATEWAY_FILESYSTEM) {
-            $gateway = new Gateway\Filesystem();
-
-        } elseif ($gateway == ConfigHandler::GATEWAY_REMOTE) {
-            $gateway = new Gateway\Remote();
-
-        } else {
-            throw new \Exception("Gateway $gateway not found");
-        }
+        $gateway = new Gateway\Filesystem();
 
         return $gateway;
-
     }
 
     /**
@@ -82,7 +74,7 @@ class InstancesHandler
     {
         $instances = self::getCache();
         if ($identifier) {
-            if (isset( $instances[$identifier] )) {
+            if (isset($instances[$identifier])) {
                 return $instances[$identifier];
             }
 
@@ -94,11 +86,30 @@ class InstancesHandler
 
     public static function filter($filter = null)
     {
-        $instances = self::getCache();
-        if ($filter){
-
+        $_instances = self::getCache();
+        if ($filter) {
+            $instances = array();
+            foreach ($_instances as $instance){
+                if (in_array($filter, $instance->getTags())){
+                    $instances[$instance->getIdentifier()] = $instance;
+                }
+                ksort($instances);
+            }
+        }else{
+            $instances = $_instances;
         }
 
         return $instances;
+    }
+
+    public static function getStatus()
+    {
+        $gateway = self::getGateway();
+        $data = $gateway->read();
+
+        return array(
+            'instances_count' => count($data['instances']),
+            'last_update' => (new \DateTime())->setTimestamp($data['timestamp'])->format(DATE_RSS)
+        );
     }
 }

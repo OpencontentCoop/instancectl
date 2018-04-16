@@ -7,11 +7,9 @@ use Symfony\Component\VarDumper\VarDumper;
 
 class ConfigHandler
 {
-    const CONFIG_FILENAME = 'instancectl.config';
+    const CONFIG_FILENAME = '.instancectl.config';
 
     const GATEWAY_FILESYSTEM = 'filesystem';
-
-    const GATEWAY_REMOTE = 'remote';
 
     private $currentDirectory;
 
@@ -71,6 +69,7 @@ class ConfigHandler
         if (file_exists($this->currentFilepath)) {
             $data = Yaml::parse(file_get_contents($this->currentFilepath));
         }
+        $data['config_filename'] = self::CONFIG_FILENAME;
         VarDumper::dump($data);
     }
 
@@ -87,4 +86,10 @@ class ConfigHandler
 
         return new Config($data);
     }
+
+    public static function isConfigured()
+    {
+        return file_exists((new self)->getCurrentFilepath());
+    }
+
 }
