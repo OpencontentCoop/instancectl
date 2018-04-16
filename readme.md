@@ -3,6 +3,7 @@
 ```bash
 ./vendor/bin/box build -v
 mv instancectl.phar /usr/local/bin/instancectl
+chmod a+x /usr/local/bin/instancectl
 ```
 
 ## Config
